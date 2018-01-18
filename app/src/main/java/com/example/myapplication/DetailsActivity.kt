@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.activity_ditails.*
 import org.parceler.Parcels.unwrap
 
 
-class DitailsActivity : AppCompatActivity() {
-    private val TAG = DitailsActivity::class.java.simpleName
+class DetailsActivity : AppCompatActivity() {
+    private val TAG = DetailsActivity::class.java.simpleName
 
     private lateinit var content: Update
 
