@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), ContentAdapter.OnItemClickListener {
     override fun onItemClickListener(content: Update) {
         Log.d(TAG, content.toString())
 
-        val intent = Intent(this, DitailsActivity::class.java)
+        val intent = Intent(this, DetailsActivity::class.java)
         intent.putExtra("content", wrap(content))
         startActivity(intent)
     }
