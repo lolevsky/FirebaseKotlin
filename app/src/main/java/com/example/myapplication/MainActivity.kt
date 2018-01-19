@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
-import com.example.myapplication.Update.TYPE.Companion.DHT
-import com.example.myapplication.Update.TYPE.Companion.SEN
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -18,9 +16,9 @@ import org.parceler.Parcels.wrap
 class MainActivity : AppCompatActivity(), ContentAdapter.OnItemClickListener {
     private val TAG = MainActivity::class.java.simpleName
 
-    private val listItemsDHT: ArrayList<LogDHT> = arrayListOf()
-    private val listItemsSEN: ArrayList<LogSEN> = arrayListOf()
-    private val listItemsUpdate: ArrayList<Update> = arrayListOf()
+    private val listItemsDHT: ArrayList<MyData> = arrayListOf()
+    private val listItemsSEN: ArrayList<MyData> = arrayListOf()
+    private val listItemsUpdate: ArrayList<MyData> = arrayListOf()
 
     private lateinit var contentAdapter: ContentAdapter
 
@@ -43,16 +41,7 @@ class MainActivity : AppCompatActivity(), ContentAdapter.OnItemClickListener {
                     item
                 }
 
-                listItemsUpdate.clear()
-                listItemsDHT.forEach {
-                    listItemsUpdate.add(Update(DHT, it, null))
-                }
-
-                listItemsSEN.forEach {
-                    listItemsUpdate.add(Update(SEN, null, it))
-                }
-
-                contentAdapter.notifyDataSetChanged()
+                updateResult()
 
                 Log.d(TAG, "Value size DHT: " + listItemsDHT.size)
             }
@@ -73,16 +62,7 @@ class MainActivity : AppCompatActivity(), ContentAdapter.OnItemClickListener {
                     item
                 }
 
-                listItemsUpdate.clear()
-                listItemsDHT.forEach {
-                    listItemsUpdate.add(Update(DHT, it, null))
-                }
-
-                listItemsSEN.forEach {
-                    listItemsUpdate.add(Update(SEN, null, it))
-                }
-
-                contentAdapter.notifyDataSetChanged()
+                updateResult()
 
                 Log.d(TAG, "Value size SEN: " + listItemsSEN.size)
             }
@@ -93,7 +73,15 @@ class MainActivity : AppCompatActivity(), ContentAdapter.OnItemClickListener {
         })
     }
 
-    override fun onItemClickListener(content: Update) {
+    fun updateResult() {
+        listItemsUpdate.clear()
+        listItemsUpdate.addAll(listItemsDHT)
+        listItemsUpdate.addAll(listItemsSEN)
+
+        contentAdapter.notifyDataSetChanged()
+    }
+
+    override fun onItemClickListener(content: MyData) {
         Log.d(TAG, content.toString())
 
         val intent = Intent(this, DetailsActivity::class.java)

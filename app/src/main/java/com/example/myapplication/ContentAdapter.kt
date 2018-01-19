@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.view_item.view.*
 
 
-class ContentAdapter(private val items: List<Update>, private val listener: OnItemClickListener? = null) : RecyclerView.Adapter<ContentAdapter.ViewHolder>() {
+class ContentAdapter(private val items: List<MyData>, private val listener: OnItemClickListener? = null) : RecyclerView.Adapter<ContentAdapter.ViewHolder>() {
 
     companion object {
         const val TYPE_DHT = 0
@@ -16,8 +16,8 @@ class ContentAdapter(private val items: List<Update>, private val listener: OnIt
     }
 
     override fun getItemViewType(position: Int): Int {
-        val type = when (items[position].updateType) {
-            Update.TYPE.DHT -> TYPE_DHT
+        val type = when (items[position].getType()) {
+            MyData.TYPE.DHT -> TYPE_DHT
             else -> TYPE_SEN
         }
         return type
@@ -39,22 +39,24 @@ class ContentAdapter(private val items: List<Update>, private val listener: OnIt
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(content: Update) = with(itemView) {
+        fun bind(content: MyData) = with(itemView) {
 
-            when (content.updateType) {
-                Update.TYPE.DHT -> {
-                    title.text = "DHT";
-                    param1.text = "Temperature = ${content.logDHT?.temperature}"
-                    param2.text = "Humidity = ${content.logDHT?.humidity}"
-                    param3.text = "Time = ${content.logDHT?.time}"
+            param3.text = "Time = ${content.getDataTime()}"
+
+            when (content.getType()) {
+                MyData.TYPE.DHT -> {
+                    title.text = "DHT"
+
+                    param1.text = "Temperature = ${content.getParam1()}"
+                    param2.text = "Humidity = ${content.getParam2()}"
                 }
                 else -> {
-                    title.text = "SEN";
-                    param1.text = "ELD1 = ${content.logSEN?.eld1}"
-                    param2.text = "ELD2 = ${content.logSEN?.eld2}"
-                    param3.text = "Time = ${content.logSEN?.time}"
+                    title.text = "SEN"
 
-                    if (content.logSEN?.eld1 == 1 || content.logSEN?.eld2 == 1) {
+                    param1.text = "ELD1 = ${content.getParam1()}"
+                    param2.text = "ELD2 = ${content.getParam2()}"
+
+                    if (content.getParam1() == "1" || content.getParam2() == "1") {
                         itemView.setBackgroundColor(Color.RED)
                     } else {
                         itemView.setBackgroundColor(Color.WHITE)
@@ -65,6 +67,6 @@ class ContentAdapter(private val items: List<Update>, private val listener: OnIt
     }
 
     interface OnItemClickListener {
-        fun onItemClickListener(content: Update)
+        fun onItemClickListener(content: MyData)
     }
 }

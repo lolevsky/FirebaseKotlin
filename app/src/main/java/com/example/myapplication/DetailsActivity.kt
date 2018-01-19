@@ -16,23 +16,25 @@ import org.parceler.Parcels.unwrap
 class DetailsActivity : AppCompatActivity() {
     private val TAG = DetailsActivity::class.java.simpleName
 
-    private lateinit var content: Update
+    private lateinit var content: MyData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ditails)
         initActionBar()
 
-        content = unwrap<Update>(intent.extras.getParcelable("content"))
+        content = unwrap<MyData>(intent.extras.getParcelable("content"))
 
         val database = FirebaseDatabase.getInstance()
 
-        when (content.updateType) {
-            Update.TYPE.DHT -> {
+        when (content.getType()) {
+            MyData.TYPE.DHT -> {
                 val myRef1 = database.getReference("logDHT")
                 myRef1.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        content.logDHT = dataSnapshot.child("" + content.logDHT?.id).getValue(LogDHT::class.java)
+                        val log: LogDHT? = dataSnapshot.child("" + content.getDataId()).getValue(LogDHT::class.java)
+                        log?.id = content.getDataId()
+                        content = log as MyData
 
                         updateViewDHT()
                     }
@@ -48,7 +50,9 @@ class DetailsActivity : AppCompatActivity() {
                 val myRef1 = database.getReference("logSEN")
                 myRef1.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        content.logSEN = dataSnapshot.child("" + content.logSEN?.id).getValue(LogSEN::class.java)
+                        val log: LogSEN? = dataSnapshot.child("" + content.getDataId()).getValue(LogSEN::class.java)
+                        log?.id = content.getDataId()
+                        content = log as MyData
 
                         updateViewSEN()
                     }
@@ -65,33 +69,33 @@ class DetailsActivity : AppCompatActivity() {
 
     fun updateViewSEN() {
         title_text.text = "SEN";
-        param1.text = "ELD1 = ${content.logSEN?.eld1}"
-        param2.text = "ELD2 = ${content.logSEN?.eld2}"
-        param3.text = "Time = ${content.logSEN?.time}"
+        param1.text = "ELD1 = ${content.getParam1()}"
+        param2.text = "ELD2 = ${content.getParam2()}"
+        param3.text = "Time = ${content.getDataTime()}"
 
         updateRedBackground()
     }
 
     fun updateViewDHT() {
         title_text.text = "DHT";
-        param1.text = "Temperature = ${content.logDHT?.temperature}"
-        param2.text = "Humidity = ${content.logDHT?.humidity}"
-        param3.text = "Time = ${content.logDHT?.time}"
+        param1.text = "Temperature = ${content.getParam1()}"
+        param2.text = "Humidity = ${content.getParam2()}"
+        param3.text = "Time = ${content.getDataTime()}"
 
         updateRedBackground()
     }
 
-    fun updateRedBackground() {
-        val root = title_text.getRootView()
+    private fun updateRedBackground() {
+        val root = title_text.rootView
 
-        if (content.logSEN?.eld1 == 1 || content.logSEN?.eld2 == 1) {
+        if (content.getParam1() == "1" || content.getParam2() == "1") {
             root.setBackgroundColor(Color.RED)
         } else {
             root.setBackgroundColor(Color.WHITE)
         }
     }
 
-    fun initActionBar() {
+    private fun initActionBar() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
